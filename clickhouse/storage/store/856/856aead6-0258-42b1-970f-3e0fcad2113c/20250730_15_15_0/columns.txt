@@ -1,0 +1,6 @@
+columns format version: 1
+4 columns:
+`ts` DateTime
+`id` UInt32
+`name` String
+`age` UInt8
