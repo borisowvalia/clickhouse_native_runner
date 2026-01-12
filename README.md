@@ -2,7 +2,7 @@
 
 Минимальный HTTP-прокси для ClickHouse, который работает в serverless контейнерах (Yandex Cloud Serverless Container, AWS Fargate, Google Cloud Run и т.д.).
 
-![Архитектура](arch.png)
+![Архитектура](arch.jpg)
 
 ## Описание
 

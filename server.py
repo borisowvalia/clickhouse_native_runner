@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Минимальный HTTP-сервер для ClickHouse в Serverless Container.
+HTTP-сервер для ClickHouse в Serverless Container.
 Использует встроенный http.server для максимальной скорости старта.
-Учетные данные приходят в каждом запросе.
 """
 import os
 import json
