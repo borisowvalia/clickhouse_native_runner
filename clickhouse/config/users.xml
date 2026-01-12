@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<clickhouse>
+    <!-- See also the files in users.d directory where the settings can be overridden. -->
+
+    <!-- Profiles of settings. -->
+    <profiles>
+        <!-- Default settings. -->
+        <default>
+        </default>
+
+        <!-- Profile that allows only read queries. -->
+        <readonly>
+            <readonly>1</readonly>
+        </readonly>
+    </profiles>
+
+    <!-- Users and ACL. -->
+    <users>
+        <!-- If user name was not specified, 'default' user is used. -->
+        <default>
+            <password/>
+            <networks>
+                <ip>::1</ip>
+                <ip>127.0.0.1</ip>
+            </networks>
+            <profile>default</profile>
+            <quota>default</quota>
+            <access_management>1</access_management>
+            <named_collection_control>1</named_collection_control>
+        </default>
+
+        <!-- Admin user with full privileges -->
+        <admin>
+            <!-- Password: admin123 -->
+            <!-- SHA256 hash of password -->
+            <password_sha256_hex>240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9</password_sha256_hex>
+            
+            <!-- Allow access from anywhere -->
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+
+            <!-- Use default profile -->
+            <profile>default</profile>
+
+            <!-- Use default quota -->
+            <quota>default</quota>
+
+            <!-- Admin privileges -->
+            <access_management>1</access_management>
+            <named_collection_control>1</named_collection_control>
+        </admin>
+
+        <!-- Platform user with restricted DDL/DML:
+             - Full read access everywhere
+             - CREATE TEMPORARY TABLE anywhere (for multi-statement scripts)
+             - ALTER/CREATE/DROP/INSERT only for:
+               - temporary tables (_temporary_and_external_tables)
+               - tables in database demo
+        -->
+        <quantilecamp>
+            <!-- Password: admin123 (same as admin for now) -->
+            <password_sha256_hex>240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9</password_sha256_hex>
+
+            <!-- Allow access from anywhere -->
+            <networks>
+                <ip>::/0</ip>
+            </networks>
+
+            <profile>default</profile>
+            <quota>default</quota>
+
+            <!-- RBAC grants applied on startup -->
+            <grants>
+                <query>REVOKE ALL ON *.*</query>
+
+                <!-- Read-only everywhere -->
+                <query>GRANT SELECT, SHOW TABLES, SHOW DATABASES, SHOW DICTIONARIES, SHOW COLUMNS ON *.*</query>
+
+                <!-- Temporary tables (session-scoped) -->
+                <query>GRANT CREATE TEMPORARY TABLE ON *.*</query>
+                <query>GRANT SELECT, INSERT, ALTER TABLE, DROP TABLE ON _temporary_and_external_tables.*</query>
+
+                <!-- Writable sandbox schema -->
+                <query>GRANT SELECT, INSERT, ALTER TABLE, CREATE TABLE, DROP TABLE ON demo.*</query>
+            </grants>
+        </quantilecamp>
+    </users>
+
+    <!-- Quotas. -->
+    <quotas>
+        <!-- Name of quota. -->
+        <default>
+            <!-- Limits for time interval. You could specify many intervals with different limits. -->
+            <interval>
+                <!-- Length of interval. -->
+                <duration>3600</duration>
+
+                <!-- No limits. Just calculate resource usage for time interval. -->
+                <queries>0</queries>
+                <errors>0</errors>
+                <result_rows>0</result_rows>
+                <read_rows>0</read_rows>
+                <execution_time>0</execution_time>
+            </interval>
+        </default>
+    </quotas>
+
+    <!-- Docs: <https://clickhouse.com/docs/operations/settings/settings_users/> -->
+</clickhouse>
+

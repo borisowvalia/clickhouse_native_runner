@@ -143,8 +143,9 @@
     <!-- Port for HTTP API. See also 'https_port' for secure connections.
          This interface is also used by ODBC and JDBC drivers (DataGrip, Dbeaver, ...)
          and by most of the web interfaces (embedded UI, Grafana, Redash, ...).
+         Используем фиксированный порт 8123, так как HTTP-прокси работает на PORT из Serverless Container
       -->
-    <http_port from_env="PORT"/>
+    <http_port>8123</http_port>
 
     <!-- Port for interaction by native protocol with:
          - clickhouse-client and other native ClickHouse tools (clickhouse-benchmark);
@@ -270,10 +271,9 @@
     <!-- <listen_host>0.0.0.0</listen_host> -->
 
     <!-- Default values - try listen localhost on IPv4 and IPv6. -->
-    <!--
-    <listen_host>::1</listen_host>
-    <listen_host>127.0.0.1</listen_host>
-    -->
+    <!-- Раскомментировано для доступа из Python-прокси внутри контейнера -->
+    <!-- Use IPv4 listen host for environments with IPv6 disabled -->
+    <listen_host>0.0.0.0</listen_host>
 
     <!-- <interserver_listen_host>::</interserver_listen_host> -->
     <!-- Listen host for communication between replicas. Used for data exchange -->
@@ -415,17 +415,19 @@
     </query_cache>
 
     <!-- Configure other thread pools: -->
-    <!--
-    <background_buffer_flush_schedule_pool_size>16</background_buffer_flush_schedule_pool_size>
-    <background_pool_size>16</background_pool_size>
-    <background_merges_mutations_concurrency_ratio>2</background_merges_mutations_concurrency_ratio>
+    <!-- 
+    Для эфимерного контейнера можно минимизировать эти значения, но требуется тестирование.
+    Минимальные рабочие значения (примерно в 4-8 раз меньше дефолтных):
+    <background_buffer_flush_schedule_pool_size>4</background_buffer_flush_schedule_pool_size>
+    <background_pool_size>4</background_pool_size>
+    <background_merges_mutations_concurrency_ratio>1</background_merges_mutations_concurrency_ratio>
     <background_merges_mutations_scheduling_policy>round_robin</background_merges_mutations_scheduling_policy>
-    <background_move_pool_size>8</background_move_pool_size>
-    <background_fetches_pool_size>8</background_fetches_pool_size>
-    <background_common_pool_size>8</background_common_pool_size>
-    <background_schedule_pool_size>128</background_schedule_pool_size>
-    <background_message_broker_schedule_pool_size>16</background_message_broker_schedule_pool_size>
-    <background_distributed_schedule_pool_size>16</background_distributed_schedule_pool_size>
+    <background_move_pool_size>2</background_move_pool_size>
+    <background_fetches_pool_size>2</background_fetches_pool_size>
+    <background_common_pool_size>2</background_common_pool_size>
+    <background_schedule_pool_size>16</background_schedule_pool_size>
+    <background_message_broker_schedule_pool_size>2</background_message_broker_schedule_pool_size>
+    <background_distributed_schedule_pool_size>2</background_distributed_schedule_pool_size>
     <tables_loader_foreground_pool_size>0</tables_loader_foreground_pool_size>
     <tables_loader_background_pool_size>0</tables_loader_background_pool_size>
     -->
@@ -1163,7 +1165,7 @@
     <!-- Load dictionaries lazily, i.e. a dictionary will be loaded when it's used for the first time.
          "false" means ClickHouse will start loading dictionaries immediately at startup.
     -->
-    <dictionaries_lazy_load>true</dictionaries_lazy_load>
+    <dictionaries_lazy_load>false</dictionaries_lazy_load>
 
     <!-- Wait at startup until all the dictionaries finish their loading (successfully or not)
          before receiving any connections. Affects dictionaries only if "dictionaries_lazy_load" is false.
