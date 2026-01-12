@@ -2,6 +2,8 @@
 
 Минимальный HTTP-прокси для ClickHouse, который работает в serverless контейнерах (Yandex Cloud Serverless Container, AWS Fargate, Google Cloud Run и т.д.).
 
+![Архитектура](arch.png)
+
 ## Описание
 
 ClickHouse Native Runner предоставляет легковесный HTTP API для выполнения SQL-запросов к ClickHouse через нативный протокол. Проект оптимизирован для работы в serverless окружениях с минимальным временем старта и размером образа.
